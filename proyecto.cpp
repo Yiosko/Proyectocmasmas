@@ -7,11 +7,9 @@
 
 using namespace std;
 
-struct proyecto
-{ 
-    long long int codigo;
-    string nombre;
-    proyecto *der;  // variable derdor enlace
-    proyecto *izq;  // variable derdor enlace
-};
+struct proyecto;
 
+int main() {
+    std::cout << "Hola mundo\n";
+    return 0;
+}

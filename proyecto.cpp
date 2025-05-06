@@ -11,5 +11,7 @@ struct proyecto;
 
 int main() {
     std::cout << "Hola mundo\n";
+
     return 0;
 }
+/// que parte de que estoy trabajando no entiende

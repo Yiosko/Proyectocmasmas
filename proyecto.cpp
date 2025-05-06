@@ -37,3 +37,13 @@ struct proyecto
 
 // ahora para publicar la rama y yo la pueda ver seria en message poner cualquier cosa
 // y le da a commit que vendria siendo pedir peticion hacer peticion
+
+//error de principiante JAJAJAJAJAJA
+//esto significa que eres desarrollador nuevo, asi que no tienes nombre de desarrollador ni un email
+// para los mergeos
+// hay varias formas de crearlo y yo tengo el comando bash lo encontre
+//git config --global user.name "SergioCuervo"
+//git config --global user.email "cuervosergioignacio@gmail.com"
+
+
+// ahora si me deberia dejar ejecutar el commit

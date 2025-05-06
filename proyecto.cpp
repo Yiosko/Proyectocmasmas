@@ -10,6 +10,7 @@ using namespace std;
 struct proyecto;
 
 int main() {
-    std::cout << "Hola mundo\n";
+    std::cout << "Hola mundo\n"; // excelente
+
     return 0;
 }

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-// Mover las estructuras antes de la variable global
+
 struct Estudiante{
     int codigo;
     string nombre;
@@ -22,7 +22,7 @@ struct Salon{
     struct Estudiante* abajo;
 };
 
-// Cambiar raiz por cab (cabecera de la lista de salones)
+
 Salon* cab = NULL;
 
 void menu1(void);
@@ -369,4 +369,3 @@ void modificarEstudiante() {
     cin >> actual->nombre;
     cout << "Estudiante modificado exitosamente!" << endl;
 }
-// Fin del programa 

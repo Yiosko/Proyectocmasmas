@@ -22,8 +22,8 @@ struct Salon{
     struct Estudiante* abajo;
 };
 
-// Ahora declaramos la variable global después de las estructuras
-Salon* raiz = NULL;
+// Cambiar raiz por cab (cabecera de la lista de salones)
+Salon* cab = NULL;
 
 void menu1(void);
 void menu2(void);
@@ -73,7 +73,7 @@ void menu1(void){
 void menu2(void){
     int opcion;
     do{
-        cout<<"Menu del Salon\n"<<endl;  // Corregido /n a \n
+        cout<<"Menu del Salon\n"<<endl;
         cout<<"1. Ingresar"<<endl;
         cout<<"2. Mostrar"<<endl;
         cout<<"3. Sacar"<<endl;
@@ -107,7 +107,7 @@ void menu2(void){
 void menu3(void){
     int opcion;
     do{
-        cout<<"Menu de Estudiantes\n"<<endl;  // Corregido /n a \n
+        cout<<"Menu de Estudiantes\n"<<endl;
         cout<<"1. Ingresar"<<endl;
         cout<<"2. Mostrar"<<endl;
         cout<<"3. Sacar"<<endl;
@@ -148,18 +148,18 @@ void ingresarSalon() {
     nuevo->der = NULL;
     nuevo->abajo = NULL;
 
-    if (raiz == NULL) {
-        raiz = nuevo;
+    if (cab == NULL) {
+        cab = nuevo;
     } else {
-        Salon* actual = raiz;
+        Salon* actual = cab;
         Salon* anterior = NULL;
         while (actual != NULL && actual->codigo < nuevo->codigo) {
             anterior = actual;
             actual = actual->der;
         }
         if (anterior == NULL) {
-            nuevo->der = raiz;
-            raiz = nuevo;
+            nuevo->der = cab;
+            cab = nuevo;
         } else {
             anterior->der = nuevo;
             nuevo->der = actual;
@@ -169,7 +169,7 @@ void ingresarSalon() {
 }
 
 void ingresarEstudiante() {
-    if (raiz == NULL) {
+    if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
         return;
     }
@@ -178,7 +178,7 @@ void ingresarEstudiante() {
     cout << "Ingrese el codigo del salon: ";
     cin >> codigoSalon;
 
-    Salon* salonActual = raiz;
+    Salon* salonActual = cab;
     while (salonActual != NULL && salonActual->codigo != codigoSalon) {
         salonActual = salonActual->der;
     }
@@ -208,12 +208,12 @@ void ingresarEstudiante() {
 }
 
 void mostrar() {
-    if (raiz == NULL) {
+    if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
         return;
     }
 
-    Salon* salonActual = raiz;
+    Salon* salonActual = cab;
     while (salonActual != NULL) {
         cout << "\nSalon " << salonActual->codigo << " - " << salonActual->materia << endl;
         Estudiante* estudianteActual = salonActual->abajo;
@@ -229,7 +229,7 @@ void mostrar() {
 }
 
 void sacarSalon() {
-    if (raiz == NULL) {
+    if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
         return;
     }
@@ -238,7 +238,7 @@ void sacarSalon() {
     cout << "Ingrese el codigo del salon a eliminar: ";
     cin >> codigo;
 
-    Salon* actual = raiz;
+    Salon* actual = cab;
     Salon* anterior = NULL;
 
     while (actual != NULL && actual->codigo != codigo) {
@@ -252,7 +252,7 @@ void sacarSalon() {
     }
 
     if (anterior == NULL) {
-        raiz = actual->der;
+        cab = actual->der;
     } else {
         anterior->der = actual->der;
     }
@@ -262,7 +262,7 @@ void sacarSalon() {
 }
 
 void sacarEstudiante() {
-    if (raiz == NULL) {
+    if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
         return;
     }
@@ -271,7 +271,7 @@ void sacarEstudiante() {
     cout << "Ingrese el codigo del salon: ";
     cin >> codigoSalon;
 
-    Salon* salonActual = raiz;
+    Salon* salonActual = cab;
     while (salonActual != NULL && salonActual->codigo != codigoSalon) {
         salonActual = salonActual->der;
     }
@@ -308,7 +308,7 @@ void sacarEstudiante() {
 }
 
 void modificarSalon() {
-    if (raiz == NULL) {
+    if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
         return;
     }
@@ -317,7 +317,7 @@ void modificarSalon() {
     cout << "Ingrese el codigo del salon a modificar: ";
     cin >> codigo;
 
-    Salon* actual = raiz;
+    Salon* actual = cab;
     while (actual != NULL && actual->codigo != codigo) {
         actual = actual->der;
     }
@@ -333,7 +333,7 @@ void modificarSalon() {
 }
 
 void modificarEstudiante() {
-    if (raiz == NULL) {
+    if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
         return;
     }
@@ -342,7 +342,7 @@ void modificarEstudiante() {
     cout << "Ingrese el codigo del salon: ";
     cin >> codigoSalon;
 
-    Salon* salonActual = raiz;
+    Salon* salonActual = cab;
     while (salonActual != NULL && salonActual->codigo != codigoSalon) {
         salonActual = salonActual->der;
     }
@@ -369,3 +369,4 @@ void modificarEstudiante() {
     cin >> actual->nombre;
     cout << "Estudiante modificado exitosamente!" << endl;
 }
+// Fin del programa 

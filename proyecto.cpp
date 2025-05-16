@@ -113,9 +113,10 @@ void menu3(void){
         cout<<"1. Ingresar"<<endl;
         cout<<"2. Mostrar"<<endl;
         cout<<"3. Reporte de mejores y peores notas de los estudiantes"<<endl;
-        cout<<"4. Sacar"<<endl;
-        cout<<"5. Modificar"<<endl;
-        cout<<"6. Salir"<<endl;
+        cout<< "4. Mostrar salon con mejor promedio y sus estudiantes" << endl;
+        cout<<"5. Sacar"<<endl;
+        cout<<"6. Modificar"<<endl;
+        cout<<"7. Salir"<<endl;
         cout<<"Ingrese una opcion: ";
         cin>>opcion;
 
@@ -130,18 +131,21 @@ void menu3(void){
                 reporteMejoresYPeores();
             break;
             case 4:
+             mostrarSalonConMejorPromedio();
+             break;
+            case 5:
                 sacarEstudiante();
                 break;
-            case 5:
+            case 6:
                 modificarEstudiante();
                 break;
-            case 6:
+            case 7:
                 cout<<"Saliendo del programa..."<<endl;
                 break;
             default:
                 cout<<"Opcion no valida, intente de nuevo."<<endl;
         }
-    }while(opcion != 6 );
+    }while(opcion != 7);
 }
 
 void ingresarSalon() {
@@ -197,11 +201,12 @@ void ingresarEstudiante() {
     Estudiante* nuevo = new Estudiante();
     cout << "Ingrese el codigo del estudiante: ";
     cin >> nuevo->codigo;
+    cin.ignore(); // Limpiar buffer
     cout << "Ingrese el nombre del estudiante: ";
-    cin.ignore(); // Limpiar el buffer
-    getline(cin, nuevo->nombre);
-    cout << "Ingrese la nota del estudiante: ";
+    std::getline(cin, nuevo->nombre);
+    cout << "Ingrese la nota del estudiante: ";         
     cin >> nuevo->nota;
+
     nuevo->abajo = NULL;
 
     if (salonActual->abajo == NULL) {
@@ -215,6 +220,7 @@ void ingresarEstudiante() {
     }
     cout << "Estudiante agregado exitosamente!" << endl;
 }
+
 
 void mostrar() {
     if (cab == NULL) {
@@ -304,6 +310,56 @@ void reporteMejoresYPeores() {
                  << " | Salon: " << salonPeor[i]->codigo
                  << " - " << salonPeor[i]->materia << endl;
         }
+    }
+}
+
+void mostrarSalonConMejorPromedio() {
+    if (cab == NULL) {
+        cout << "No hay salones registrados!" << endl;
+        return;
+    }
+
+    Salon* mejorSalon = NULL;
+    float mejorPromedio = -1.0;
+
+    Salon* salonActual = cab;
+
+    while (salonActual != NULL) {
+        Estudiante* estudianteActual = salonActual->abajo;
+        int cantidad = 0;
+        float sumaNotas = 0;
+
+        while (estudianteActual != NULL) {
+            sumaNotas += estudianteActual->nota;
+            cantidad++;
+            estudianteActual = estudianteActual->abajo;
+        }
+
+        if (cantidad > 0) {
+            float promedio = sumaNotas / cantidad;
+            if (promedio > mejorPromedio) {
+                mejorPromedio = promedio;
+                mejorSalon = salonActual;
+            }
+        }
+
+        salonActual = salonActual->der;
+    }
+
+    if (mejorSalon != NULL) {
+        cout << "\n--- Salon con el Mejor Promedio ---" << endl;
+        cout << "Salon " << mejorSalon->codigo << " - " << mejorSalon->materia << endl;
+        cout << "Promedio: " << mejorPromedio << endl;
+
+        Estudiante* estudianteActual = mejorSalon->abajo;
+        while (estudianteActual != NULL) {
+            cout << "  Estudiante: " << estudianteActual->codigo
+                 << " - " << estudianteActual->nombre
+                 << " | Nota: " << estudianteActual->nota << endl;
+            estudianteActual = estudianteActual->abajo;
+        }
+    } else {
+        cout << "No hay estudiantes en los salones para calcular el promedio." << endl;
     }
 }
 

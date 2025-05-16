@@ -11,6 +11,7 @@ using namespace std;
 struct Estudiante{
     int codigo;
     string nombre;
+    float nota;
     struct Estudiante* abajo;  
 };
 
@@ -110,9 +111,10 @@ void menu3(void){
         cout<<"Menu de Estudiantes\n"<<endl;
         cout<<"1. Ingresar"<<endl;
         cout<<"2. Mostrar"<<endl;
-        cout<<"3. Sacar"<<endl;
-        cout<<"4. Modificar"<<endl;
-        cout<<"5. Salir"<<endl;
+        cout<<"3. Reporte de mejores y peores notas de los estudiantes"<<endl;
+        cout<<"4. Sacar"<<endl;
+        cout<<"5. Modificar"<<endl;
+        cout<<"6. Salir"<<endl;
         cout<<"Ingrese una opcion: ";
         cin>>opcion;
 
@@ -124,12 +126,15 @@ void menu3(void){
                 mostrar();
                 break;
             case 3:
+                reporteMejoresYPeores();
+            break;
+            case 4:
                 sacarEstudiante();
                 break;
-            case 4:
+            case 5:
                 modificarEstudiante();
                 break;
-            case 5:
+            case 6:
                 cout<<"Saliendo del programa..."<<endl;
                 break;
             default:
@@ -194,6 +199,8 @@ void ingresarEstudiante() {
     cout << "Ingrese el nombre del estudiante: ";
     cin >> nuevo->nombre;
     nuevo->abajo = NULL;
+    cout << "Ingrese la nota del estudiante: ";
+    cin >> nuevo->nota;
 
     if (salonActual->abajo == NULL) {
         salonActual->abajo = nuevo;
@@ -225,6 +232,76 @@ void mostrar() {
             estudianteActual = estudianteActual->abajo;
         }
         salonActual = salonActual->der;
+    }
+}
+
+void reporteMejoresYPeores() {
+    if (cab == NULL) {
+        cout << "No hay salones ni estudiantes registrados!" << endl;
+        return;
+    }
+
+    // Inicializar
+    Estudiante* mejores[2] = {NULL, NULL};
+    Estudiante* peores[2] = {NULL, NULL};
+    Salon* salonMejor[2] = {NULL, NULL};
+    Salon* salonPeor[2] = {NULL, NULL};
+
+    Salon* salonActual = cab;
+    while (salonActual != NULL) {
+        Estudiante* estudianteActual = salonActual->abajo;
+        while (estudianteActual != NULL) {
+            float nota = estudianteActual->nota;
+
+            // Verificar mejores
+            for (int i = 0; i < 2; ++i) {
+                if (mejores[i] == NULL || nota > mejores[i]->nota) {
+                    if (i == 1) {
+                        mejores[1] = mejores[0];
+                        salonMejor[1] = salonMejor[0];
+                    }
+                    mejores[0] = estudianteActual;
+                    salonMejor[0] = salonActual;
+                    break;
+                }
+            }
+
+            // Verificar peores
+            for (int i = 0; i < 2; ++i) {
+                if (peores[i] == NULL || nota < peores[i]->nota) {
+                    if (i == 1) {
+                        peores[1] = peores[0];
+                        salonPeor[1] = salonPeor[0];
+                    }
+                    peores[0] = estudianteActual;
+                    salonPeor[0] = salonActual;
+                    break;
+                }
+            }
+
+            estudianteActual = estudianteActual->abajo;
+        }
+        salonActual = salonActual->der;
+    }
+
+    cout << "\n--- Reporte de Mejores Estudiantes ---" << endl;
+    for (int i = 0; i < 2; ++i) {
+        if (mejores[i]) {
+            cout << "Estudiante: " << mejores[i]->nombre
+                 << " | Nota: " << mejores[i]->nota
+                 << " | Salon: " << salonMejor[i]->codigo
+                 << " - " << salonMejor[i]->materia << endl;
+        }
+    }
+
+    cout << "\n--- Reporte de Peores Estudiantes ---" << endl;
+    for (int i = 0; i < 2; ++i) {
+        if (peores[i]) {
+            cout << "Estudiante: " << peores[i]->nombre
+                 << " | Nota: " << peores[i]->nota
+                 << " | Salon: " << salonPeor[i]->codigo
+                 << " - " << salonPeor[i]->materia << endl;
+        }
     }
 }
 

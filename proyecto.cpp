@@ -1,4 +1,5 @@
 // librerias
+#include <string>
 #include<iostream>
 #include<conio.h>
 #include<stdio.h>
@@ -68,7 +69,7 @@ void menu1(void){
             default:
                 cout<<"Opcion no valida, intente de nuevo."<<endl;
         }
-    }while(opcion != 5);
+    }while(opcion != 3);
 }
 
 void menu2(void){
@@ -140,7 +141,7 @@ void menu3(void){
             default:
                 cout<<"Opcion no valida, intente de nuevo."<<endl;
         }
-    }while(opcion != 5);
+    }while(opcion != 6 );
 }
 
 void ingresarSalon() {
@@ -197,10 +198,11 @@ void ingresarEstudiante() {
     cout << "Ingrese el codigo del estudiante: ";
     cin >> nuevo->codigo;
     cout << "Ingrese el nombre del estudiante: ";
-    cin >> nuevo->nombre;
-    nuevo->abajo = NULL;
+    cin.ignore(); // Limpiar el buffer
+    getline(cin, nuevo->nombre);
     cout << "Ingrese la nota del estudiante: ";
     cin >> nuevo->nota;
+    nuevo->abajo = NULL;
 
     if (salonActual->abajo == NULL) {
         salonActual->abajo = nuevo;

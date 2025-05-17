@@ -180,34 +180,34 @@ void ingresarSalon() {
     cout << "Ingrese el codigo del salon: ";
     cin >> codigo;
     
-    if (codigoSalonExiste(codigo)) {
+    if (codigoSalonExiste(codigo)) { // si el codigo ya existe
         cout << "Error: Ya existe un salon con ese codigo!" << endl;
         cout << "Presione cualquier tecla para continuar...";
         getch();
         return;
     }
 
-    Salon* nuevo = new Salon();
-    nuevo->codigo = codigo;
+    Salon* nuevo = new Salon(); // se crea un nuevo salon
+    nuevo->codigo = codigo; // se asigna el codigo
     cout << "Ingrese la materia: ";
-    cin >> nuevo->materia;
+    cin >> nuevo->materia; // se asigna la materia
     nuevo->izq = NULL;
     nuevo->der = NULL;
     nuevo->abajo = NULL;
 
-    if (cab == NULL) {
-        cab = nuevo;
-    } else {
+    if (cab == NULL) { // si no hay salones
+        cab = nuevo; // se asigna el nuevo salon como el primero
+    } else {// si ya hay salones entonces se busca la posicion correcta
         Salon* actual = cab;
         Salon* anterior = NULL;
-        while (actual != NULL && actual->codigo < nuevo->codigo) {
-            anterior = actual;
-            actual = actual->der;
+        while (actual != NULL && actual->codigo < nuevo->codigo) { // se recorre la lista de salones
+            anterior = actual; // se guarda el salon anterior
+            actual = actual->der; // se guarda el salon actual
         }
-        if (anterior == NULL) {
+        if (anterior == NULL) { // si el nuevo salon es el primero
             nuevo->der = cab;
             cab = nuevo;
-        } else {
+        } else { // si el nuevo salon no es el primero
             anterior->der = nuevo;
             nuevo->der = actual;
         }
@@ -258,24 +258,37 @@ void ingresarEstudiante() {
 
     Estudiante* nuevo = new Estudiante();
     nuevo->codigo = codigo;
-    cin.ignore(32767, '\n'); // Limpiar el buffer completamente
+    cin.ignore(32767, '\n');
     cout << "Ingrese el nombre del estudiante: ";
-    getline(cin, nuevo->nombre); // Usar getline para permitir espacios en el nombre
+    getline(cin, nuevo->nombre);
     do {
         cout << "Ingrese la nota del estudiante (0-5): ";         
-        cin >> nuevo->nota; // Validar que la nota esté entre 0 y 5
+        cin >> nuevo->nota;
     } while(nuevo->nota < 0 || nuevo->nota > 5);
 
-    nuevo->abajo = NULL; // Inicializar el puntero abajo a NULL
+    nuevo->abajo = NULL;
 
+    // Insertar ordenadamente por nombre
     if (salonActual->abajo == NULL) {
-        salonActual->abajo = nuevo; // Primer estudiante
+        salonActual->abajo = nuevo;
     } else {
-        Estudiante* actual = salonActual->abajo; // Buscar el último estudiante
-        while (actual->abajo != NULL) { // Recorrer la lista hasta el final
-            actual = actual->abajo; // Mover al siguiente estudiante
+        Estudiante* actual = salonActual->abajo;
+        Estudiante* anterior = NULL;
+        
+        // Buscar la posición correcta según el nombre
+        while (actual != NULL && actual->nombre < nuevo->nombre) {
+            anterior = actual;
+            actual = actual->abajo;
         }
-        actual->abajo = nuevo; // Agregar el nuevo estudiante al final
+        
+        // Insertar en la posición correcta
+        if (anterior == NULL) {
+            nuevo->abajo = salonActual->abajo;
+            salonActual->abajo = nuevo;
+        } else {
+            anterior->abajo = nuevo;
+            nuevo->abajo = actual;
+        }
     }
     cout << "Estudiante agregado exitosamente!" << endl;
 }

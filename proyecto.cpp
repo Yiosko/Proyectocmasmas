@@ -262,29 +262,25 @@ void reporteMejoresYPeores() {
             float nota = estudianteActual->nota;
 
             // Verificar mejores
-            for (int i = 0; i < 2; ++i) {
-                if (mejores[i] == NULL || nota > mejores[i]->nota) {
-                    if (i == 1) {
-                        mejores[1] = mejores[0];
-                        salonMejor[1] = salonMejor[0];
-                    }
-                    mejores[0] = estudianteActual;
-                    salonMejor[0] = salonActual;
-                    break;
-                }
+            if (mejores[0] == NULL || nota > mejores[0]->nota) {
+                mejores[1] = mejores[0];
+                salonMejor[1] = salonMejor[0];
+                mejores[0] = estudianteActual;
+                salonMejor[0] = salonActual;
+            } else if (mejores[1] == NULL || nota > mejores[1]->nota) {
+                mejores[1] = estudianteActual;
+                salonMejor[1] = salonActual;
             }
 
             // Verificar peores
-            for (int i = 0; i < 2; ++i) {
-                if (peores[i] == NULL || nota < peores[i]->nota) {
-                    if (i == 1) {
-                        peores[1] = peores[0];
-                        salonPeor[1] = salonPeor[0];
-                    }
-                    peores[0] = estudianteActual;
-                    salonPeor[0] = salonActual;
-                    break;
-                }
+            if (peores[0] == NULL || nota < peores[0]->nota) {
+                peores[1] = peores[0];
+                salonPeor[1] = salonPeor[0];
+                peores[0] = estudianteActual;
+                salonPeor[0] = salonActual;
+            } else if (peores[1] == NULL || nota < peores[1]->nota) {
+                peores[1] = estudianteActual;
+                salonPeor[1] = salonActual;
             }
 
             estudianteActual = estudianteActual->abajo;

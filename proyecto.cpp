@@ -5,27 +5,26 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
+using namespace std; // para usar cout y cin sin std::
 
-using namespace std;
 
-
-struct Estudiante{
-    int codigo;
-    string nombre;
-    float nota;
-    struct Estudiante* abajo;  
+struct Estudiante{ // Definicion de la estructura Estudiante
+    int codigo; // codigo del estudiante
+    string nombre; // nombre del estudiante
+    float nota; // nota del estudiante
+    struct Estudiante* abajo;  // puntero al siguiente estudiante
 };
 
 struct Salon{
-    int codigo;
-    string materia;
-    Salon* izq;
-    Salon* der;
-    struct Estudiante* abajo;
+    int codigo; // codigo del salon
+    string materia; // materia del salon
+    Salon* izq; // puntero al salon anterior
+    Salon* der; // puntero al siguiente salon
+    struct Estudiante* abajo; // puntero al primer estudiante del salon
 };
 
 
-Salon* cab = NULL;
+Salon* cab = NULL; // puntero al primer salon
 
 void menu1(void);
 void menu2(void);
@@ -37,12 +36,15 @@ void sacarSalon(void);
 void sacarEstudiante(void);
 void modificarSalon(void);
 void modificarEstudiante(void);
+void reporteMejoresYPeores(void);
+void mostrarSalonConMejorPromedio(void);
+// Prototipos de funciones
 
 
 int main() {
-    cout << "Bienvenido al Sistema de Gestion de Salones y Estudiantes" << endl;
-    cout << "-------------------------------------------------------" << endl << endl;
-    menu1();
+    cout << "Bienvenido al Sistema de Gestion de Salones y Estudiantes" << endl; // Mensaje de bienvenida simplemente estetico
+    cout << "-------------------------------------------------------" << endl << endl; // Divisor
+    menu1(); // Llamada al menu principal
     return 0;
 }
 
@@ -68,6 +70,7 @@ void menu1(void){
             
             default:
                 cout<<"Opcion no valida, intente de nuevo."<<endl;
+                break;
         }
     }while(opcion != 3);
 }
@@ -98,7 +101,8 @@ void menu2(void){
                 modificarSalon();
                 break;
             case 5:
-                cout<<"Saliendo del programa..."<<endl;
+                cout<<"Saliendo del Menu..."<<endl;
+                cout << "-------------------------------------------------------" << endl << endl; 
                 break;
             default:
                 cout<<"Opcion no valida, intente de nuevo."<<endl;
@@ -140,7 +144,8 @@ void menu3(void){
                 modificarEstudiante();
                 break;
             case 7:
-                cout<<"Saliendo del programa..."<<endl;
+                cout<<"Saliendo del Menu..."<<endl;
+                cout << "-------------------------------------------------------" << endl << endl; 
                 break;
             default:
                 cout<<"Opcion no valida, intente de nuevo."<<endl;
@@ -148,10 +153,42 @@ void menu3(void){
     }while(opcion != 7);
 }
 
+bool codigoSalonExiste(int codigo) { // verifica si el codigo del salon ya existe
+    Salon* actual = cab;
+    while (actual != NULL) {
+        if (actual->codigo == codigo) {
+            return true;
+        }
+        actual = actual->der;
+    }
+    return false;
+}
+
+bool codigoEstudianteExiste(Salon* salon, int codigo) {
+    Estudiante* actual = salon->abajo;
+    while (actual != NULL) {
+        if (actual->codigo == codigo) {
+            return true;
+        }
+        actual = actual->abajo;
+    }
+    return false;
+}
+
 void ingresarSalon() {
-    Salon* nuevo = new Salon();
+    int codigo;
     cout << "Ingrese el codigo del salon: ";
-    cin >> nuevo->codigo;
+    cin >> codigo;
+    
+    if (codigoSalonExiste(codigo)) {
+        cout << "Error: Ya existe un salon con ese codigo!" << endl;
+        cout << "Presione cualquier tecla para continuar...";
+        getch();
+        return;
+    }
+
+    Salon* nuevo = new Salon();
+    nuevo->codigo = codigo;
     cout << "Ingrese la materia: ";
     cin >> nuevo->materia;
     nuevo->izq = NULL;
@@ -178,9 +215,16 @@ void ingresarSalon() {
     cout << "Salon agregado exitosamente!" << endl;
 }
 
+void limpiarPantalla() {
+    system("cls"); // Limpiar la pantalla
+}
+
 void ingresarEstudiante() {
     if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
+        cout << "Presione cualquier tecla para continuar...";
+        getch(); // Esperar a que el usuario presione una tecla
+        limpiarPantalla();
         return;
     }
 
@@ -195,28 +239,43 @@ void ingresarEstudiante() {
 
     if (salonActual == NULL) {
         cout << "Salon no encontrado!" << endl;
+        cout << "Presione cualquier tecla para continuar...";
+        getch();
+        limpiarPantalla();
+        return;
+    }
+
+    int codigo;
+    cout << "Ingrese el codigo del estudiante: ";
+    cin >> codigo;
+    
+    if (codigoEstudianteExiste(salonActual, codigo)) {
+        cout << "Error: Ya existe un estudiante con ese codigo en este salon!" << endl;
+        cout << "Presione cualquier tecla para continuar...";
+        getch();
         return;
     }
 
     Estudiante* nuevo = new Estudiante();
-    cout << "Ingrese el codigo del estudiante: ";
-    cin >> nuevo->codigo;
-    cin.ignore(); // Limpiar buffer
+    nuevo->codigo = codigo;
+    cin.ignore(32767, '\n'); // Limpiar el buffer completamente
     cout << "Ingrese el nombre del estudiante: ";
-    std::getline(cin, nuevo->nombre);
-    cout << "Ingrese la nota del estudiante: ";         
-    cin >> nuevo->nota;
+    getline(cin, nuevo->nombre); // Usar getline para permitir espacios en el nombre
+    do {
+        cout << "Ingrese la nota del estudiante (0-5): ";         
+        cin >> nuevo->nota; // Validar que la nota esté entre 0 y 5
+    } while(nuevo->nota < 0 || nuevo->nota > 5);
 
-    nuevo->abajo = NULL;
+    nuevo->abajo = NULL; // Inicializar el puntero abajo a NULL
 
     if (salonActual->abajo == NULL) {
-        salonActual->abajo = nuevo;
+        salonActual->abajo = nuevo; // Primer estudiante
     } else {
-        Estudiante* actual = salonActual->abajo;
-        while (actual->abajo != NULL) {
-            actual = actual->abajo;
+        Estudiante* actual = salonActual->abajo; // Buscar el último estudiante
+        while (actual->abajo != NULL) { // Recorrer la lista hasta el final
+            actual = actual->abajo; // Mover al siguiente estudiante
         }
-        actual->abajo = nuevo;
+        actual->abajo = nuevo; // Agregar el nuevo estudiante al final
     }
     cout << "Estudiante agregado exitosamente!" << endl;
 }
@@ -224,14 +283,14 @@ void ingresarEstudiante() {
 
 void mostrar() {
     if (cab == NULL) {
-        cout << "No hay salones registrados!" << endl;
+        cout << "No hay salones registrados!" << endl; // Mensaje de error si no hay salones
         return;
     }
 
-    Salon* salonActual = cab;
+    Salon* salonActual = cab; // Inicializar el puntero al primer salon
     while (salonActual != NULL) {
-        cout << "\nSalon " << salonActual->codigo << " - " << salonActual->materia << endl;
-        Estudiante* estudianteActual = salonActual->abajo;
+        cout << "\nSalon " << salonActual->codigo << " - " << salonActual->materia << endl; // Mostrar el salon actual 
+        Estudiante* estudianteActual = salonActual->abajo; // Inicializar el puntero al primer estudiante
         if (estudianteActual == NULL) {
             cout << "No hay estudiantes en este salon" << endl;
         }
@@ -245,56 +304,56 @@ void mostrar() {
 
 void reporteMejoresYPeores() {
     if (cab == NULL) {
-        cout << "No hay salones ni estudiantes registrados!" << endl;
+        cout << "No hay salones ni estudiantes registrados!" << endl; // Mensaje de error si no hay salones ni estudiantes
         return;
     }
 
     // Inicializar
-    Estudiante* mejores[2] = {NULL, NULL};
-    Estudiante* peores[2] = {NULL, NULL};
-    Salon* salonMejor[2] = {NULL, NULL};
-    Salon* salonPeor[2] = {NULL, NULL};
+    Estudiante* mejores[2] = {NULL, NULL}; // Esto es un arreglo de punteros a Estudiante funciona como una lista que guarda los mejores estudiantes 
+    Estudiante* peores[2] = {NULL, NULL}; // Peores estudiantes
+    Salon* salonMejor[2] = {NULL, NULL}; // Salones de los mejores estudiantes 
+    Salon* salonPeor[2] = {NULL, NULL}; // Salones de los peores estudiantes
 
-    Salon* salonActual = cab;
-    while (salonActual != NULL) {
-        Estudiante* estudianteActual = salonActual->abajo;
-        while (estudianteActual != NULL) {
-            float nota = estudianteActual->nota;
+    Salon* salonActual = cab; // Inicializar el puntero al primer salon
+    while (salonActual != NULL) { // Recorrer la lista de salones hasta el final
+        Estudiante* estudianteActual = salonActual->abajo; // Inicializar el puntero al primer estudiante y mover al siguiente salon
+        while (estudianteActual != NULL) { // Recorrer la lista de estudiantes hasta el final
+            float nota = estudianteActual->nota; // Obtener la nota del estudiante 
 
             // Verificar mejores
-            if (mejores[0] == NULL || nota > mejores[0]->nota) {
-                mejores[1] = mejores[0];
-                salonMejor[1] = salonMejor[0];
-                mejores[0] = estudianteActual;
-                salonMejor[0] = salonActual;
-            } else if (mejores[1] == NULL || nota > mejores[1]->nota) {
-                mejores[1] = estudianteActual;
-                salonMejor[1] = salonActual;
+            if (mejores[0] == NULL || nota > mejores[0]->nota) { // Si es el mejor estudiante o no hay estudiantes entonces lo guardamos
+                mejores[1] = mejores[0]; // apunta al mejor estudiante
+                salonMejor[1] = salonMejor[0]; // apunta al salon del mejor estudiante
+                mejores[0] = estudianteActual; // Guardamos el mejor estudiante actual
+                salonMejor[0] = salonActual;  // Guardamos el salon del mejor estudiante
+            } else if (mejores[1] == NULL || nota > mejores[1]->nota) { // Si no es el mejor estudiante pero es el segundo mejor lo guardamos
+                mejores[1] = estudianteActual; // Guardamos el segundo mejor estudiante
+                salonMejor[1] = salonActual; // Guardamos el salon del segundo mejor estudiante
             }
 
             // Verificar peores
-            if (peores[0] == NULL || nota < peores[0]->nota) {
-                peores[1] = peores[0];
-                salonPeor[1] = salonPeor[0];
-                peores[0] = estudianteActual;
-                salonPeor[0] = salonActual;
+            if (peores[0] == NULL || nota < peores[0]->nota) { // Si es el peor estudiante o no hay estudiantes entonces lo guardamos
+                peores[1] = peores[0]; // apunta al peor estudiante
+                salonPeor[1] = salonPeor[0]; // apunta al salon del peor estudiante
+                peores[0] = estudianteActual; // Guardamos el peor estudiante actual
+                salonPeor[0] = salonActual; // Guardamos el salon del peor estudiante
             } else if (peores[1] == NULL || nota < peores[1]->nota) {
-                peores[1] = estudianteActual;
-                salonPeor[1] = salonActual;
+                peores[1] = estudianteActual; // Guardamos el segundo peor estudiante
+                salonPeor[1] = salonActual; // Guardamos el salon del segundo peor estudiante
             }
 
-            estudianteActual = estudianteActual->abajo;
+            estudianteActual = estudianteActual->abajo; // Mover al siguiente estudiante
         }
-        salonActual = salonActual->der;
+        salonActual = salonActual->der; // Mover al siguiente salon
     }
 
-    cout << "\n--- Reporte de Mejores Estudiantes ---" << endl;
+    cout << "\n--- Reporte de Mejores Estudiantes ---" << endl; // Mostrar los mejores estudiantes
     for (int i = 0; i < 2; ++i) {
         if (mejores[i]) {
             cout << "Estudiante: " << mejores[i]->nombre
                  << " | Nota: " << mejores[i]->nota
                  << " | Salon: " << salonMejor[i]->codigo
-                 << " - " << salonMejor[i]->materia << endl;
+                 << " - " << salonMejor[i]->materia << endl; // Mostrar el mejor estudiante
         }
     }
 
@@ -304,55 +363,55 @@ void reporteMejoresYPeores() {
             cout << "Estudiante: " << peores[i]->nombre
                  << " | Nota: " << peores[i]->nota
                  << " | Salon: " << salonPeor[i]->codigo
-                 << " - " << salonPeor[i]->materia << endl;
+                 << " - " << salonPeor[i]->materia << endl; // Mostrar el peor estudiante
         }
     }
 }
 
 void mostrarSalonConMejorPromedio() {
     if (cab == NULL) {
-        cout << "No hay salones registrados!" << endl;
+        cout << "No hay salones registrados!" << endl; // si no hay salones registrados
         return;
     }
 
-    Salon* mejorSalon = NULL;
-    float mejorPromedio = -1.0;
+    Salon* mejorSalon = NULL; // puntero al mejor salon
+    float mejorPromedio = -1.0; // Inicializar el mejor promedio a un valor bajo
 
-    Salon* salonActual = cab;
+    Salon* salonActual = cab; // Inicializar el puntero al primer salon
 
-    while (salonActual != NULL) {
-        Estudiante* estudianteActual = salonActual->abajo;
-        int cantidad = 0;
-        float sumaNotas = 0;
+    while (salonActual != NULL) { // Recorrer la lista de salones hasta el final
+        Estudiante* estudianteActual = salonActual->abajo; // Inicializar el puntero al primer estudiante
+        int cantidad = 0; // Contador de estudiantes
+        float sumaNotas = 0; // Sumar las notas de los estudiantes
 
-        while (estudianteActual != NULL) {
-            sumaNotas += estudianteActual->nota;
-            cantidad++;
-            estudianteActual = estudianteActual->abajo;
+        while (estudianteActual != NULL) { // Recorrer la lista de estudiantes hasta el final
+            sumaNotas += estudianteActual->nota; // Sumar la nota del estudiante
+            cantidad++; // Incrementar el contador de estudiantes
+            estudianteActual = estudianteActual->abajo; // Mover al siguiente estudiante
         }
 
-        if (cantidad > 0) {
-            float promedio = sumaNotas / cantidad;
-            if (promedio > mejorPromedio) {
-                mejorPromedio = promedio;
-                mejorSalon = salonActual;
+        if (cantidad > 0) { // Si hay estudiantes en el salon
+            float promedio = sumaNotas / cantidad; // Calcular el promedio
+            if (promedio > mejorPromedio) { // Si el promedio es mejor que el mejor promedio existente
+                mejorPromedio = promedio; // Actualizar el mejor promedio
+                mejorSalon = salonActual; // Actualizar el mejor salon
             }
         }
 
-        salonActual = salonActual->der;
+        salonActual = salonActual->der; // Mover al siguiente salon
     }
 
-    if (mejorSalon != NULL) {
+    if (mejorSalon != NULL) { // Si se encontró un mejor salon
         cout << "\n--- Salon con el Mejor Promedio ---" << endl;
         cout << "Salon " << mejorSalon->codigo << " - " << mejorSalon->materia << endl;
         cout << "Promedio: " << mejorPromedio << endl;
 
-        Estudiante* estudianteActual = mejorSalon->abajo;
-        while (estudianteActual != NULL) {
+        Estudiante* estudianteActual = mejorSalon->abajo; // Inicializar el puntero al primer estudiante
+        while (estudianteActual != NULL) { // Recorrer la lista de estudiantes hasta el final
             cout << "  Estudiante: " << estudianteActual->codigo
                  << " - " << estudianteActual->nombre
-                 << " | Nota: " << estudianteActual->nota << endl;
-            estudianteActual = estudianteActual->abajo;
+                 << " | Nota: " << estudianteActual->nota << endl; // Mostrar el estudiante
+            estudianteActual = estudianteActual->abajo; // Mover al siguiente estudiante
         }
     } else {
         cout << "No hay estudiantes en los salones para calcular el promedio." << endl;
@@ -395,11 +454,13 @@ void sacarSalon() {
 void sacarEstudiante() {
     if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
+        cout << "Presione cualquier tecla para continuar...";
+        getch();
         return;
     }
 
-    int codigoSalon, codigoEstudiante;
-    cout << "Ingrese el codigo del salon: ";
+    int codigoSalon;
+    cout << "Ingrese el codigo del salon: "; 
     cin >> codigoSalon;
 
     Salon* salonActual = cab;
@@ -409,9 +470,12 @@ void sacarEstudiante() {
 
     if (salonActual == NULL) {
         cout << "Salon no encontrado!" << endl;
+        cout << "Presione cualquier tecla para continuar...";
+        getch();
         return;
     }
 
+    int codigoEstudiante;
     cout << "Ingrese el codigo del estudiante a eliminar: ";
     cin >> codigoEstudiante;
 
@@ -466,10 +530,12 @@ void modificarSalon() {
 void modificarEstudiante() {
     if (cab == NULL) {
         cout << "No hay salones registrados!" << endl;
+        cout << "Presione cualquier tecla para continuar...";
+        getch();
         return;
     }
 
-    int codigoSalon, codigoEstudiante;
+    int codigoSalon;
     cout << "Ingrese el codigo del salon: ";
     cin >> codigoSalon;
 
@@ -480,9 +546,12 @@ void modificarEstudiante() {
 
     if (salonActual == NULL) {
         cout << "Salon no encontrado!" << endl;
+        cout << "Presione cualquier tecla para continuar...";
+        getch();
         return;
     }
 
+    int codigoEstudiante;
     cout << "Ingrese el codigo del estudiante a modificar: ";
     cin >> codigoEstudiante;
 

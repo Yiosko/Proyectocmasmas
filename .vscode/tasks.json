@@ -7,7 +7,7 @@
             "command": "cmd",
             "args": [
                 "/C",
-                "taskkill /F /IM proyecto.exe > NUL 2>&1 && del /F /Q ${workspaceFolder}\\proyecto.exe > NUL 2>&1 && g++ -g ${workspaceFolder}/proyecto.cpp -o ${workspaceFolder}/proyecto.exe"
+                "echo taskkill /F /IM proyecto.exe /T 2>nul & echo Limpiando archivos anteriores... & del /F \"${workspaceFolder}\\proyecto.exe\" 2>nul & echo Compilando... & g++ -o \"${workspaceFolder}\\proyecto.exe\" \"${workspaceFolder}\\proyecto.cpp\" -static-libgcc -static-libstdc++"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -15,7 +15,10 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "detail": "Compiler: g++"
         },
         {

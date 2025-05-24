@@ -268,15 +268,15 @@ void ingresarEstudiante() {
 
     nuevo->abajo = NULL;
 
-    // Insertar ordenadamente por nombre
+    // Insertar ordenadamente por codigo
     if (salonActual->abajo == NULL) {
         salonActual->abajo = nuevo;
     } else {
         Estudiante* actual = salonActual->abajo;
         Estudiante* anterior = NULL;
         
-        // Buscar la posición correcta según el nombre
-        while (actual != NULL && actual->nombre < nuevo->nombre) {
+        // Buscar la posición correcta según el código
+        while (actual != NULL && actual->codigo < nuevo->codigo) {
             anterior = actual;
             actual = actual->abajo;
         }
@@ -388,7 +388,7 @@ void mostrarSalonConMejorPromedio() {
     }
 
     Salon* mejorSalon = NULL; // puntero al mejor salon
-    float mejorPromedio = -1.0; // Inicializar el mejor promedio a un valor bajo
+    float mejorPromedio = -1.0; // Inicializar el mejor promedio a un valor bajo para que cualquier promedio sea mejor
 
     Salon* salonActual = cab; // Inicializar el puntero al primer salon
 
